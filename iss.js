@@ -11,14 +11,15 @@ const fetchMyIP = function(callback) {
   }
 
     const ip = JSON.parse(body).ip;
-    return callback(null, ip)
+
+    callback(null, ip)
   });
 };
 
 
 
 const fetchCoordsByIP = function(ip , callback) {
-  request(`http://ip-api.com/json/?fields=61439`, (error, response, body) => {
+  request(`http://ip-api.com/json/${ip}`, (error, response, body) => {
     if (error) {
       callback(error, null);
       return;
@@ -58,4 +59,29 @@ const fetchISSFlyOverTimes = function(coords, callback) {
 }
 
 
-module.exports = { fetchMyIP, fetchCoordsByIP, fetchISSFlyOverTimes};
+
+const nextISSTimesForMyLocation = function(callback) {
+  fetchMyIP((error, ip) => {
+    if (error) {
+      return callback(error, null);
+    }
+
+    fetchCoordsByIP(ip, (error, coords) => {
+      if (error) {
+      return callback(error, null);
+    }
+
+    fetchISSFlyOverTimes(coords, (error, passes) => {
+      if (error) {
+        return callback(error, null)
+      }
+      callback(null, passes)
+      });
+    });
+  });
+};
+
+
+
+
+module.exports = { fetchMyIP, fetchCoordsByIP, fetchISSFlyOverTimes, nextISSTimesForMyLocation};
