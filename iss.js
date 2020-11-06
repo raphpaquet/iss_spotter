@@ -17,5 +17,29 @@ const fetchMyIP = function(callback) {
 
 
 
+const fetchCoordsByIP = function(ip , callback) {
+  request(`http://ip-api.com/json/?fields=61439`, (error, response, body) => {
+    if (error) {
+      callback(error, null);
+      return;
+    }
 
-module.exports = { fetchMyIP };
+    if(response.statusCode !== 200) {
+      callback(Error(`Status Code ${response.statusCode} when fetching coords ${body}`), null);
+      return;
+    }
+    
+  const coords = { 
+  lattitude: JSON.parse(body).lat,
+  longitude: JSON.parse(body).lon
+  };
+
+  return callback(null, coords )
+  
+  })
+}
+
+
+
+
+module.exports = { fetchMyIP, fetchCoordsByIP};
